@@ -25,4 +25,16 @@ jobs:
       - run: which node
       
       - run: node req.js
-      # - run: |
+      
+  owner-mismatch:
+     if: always()
+     runs-on: ubuntu-latest
+     steps:
+            
+      - uses: h0x0er/harden-runner@tls-inspect
+        with:
+            egress-policy: audit
+
+      - run: curl -XPOST https://api.github.com/repos/malicious-owner/malicious-repo
+    
+
