@@ -1,0 +1,77 @@
+name: Github API Calls
+
+on:
+  workflow_dispatch:
+
+# permissions:
+#   contents: read
+
+jobs:
+    issue-create:
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+
+          - run: free -m 
+     
+          - uses: h0x0er/harden-runner@tls-inspect #https-capture
+            with:
+              egress-policy: audit     
+          - uses: actions/checkout@v3
+          - uses: JasonEtco/create-an-issue@v2
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+          - run: free -m 
+
+    
+    create-pr:
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+
+          - run: free -m 
+          - uses: h0x0er/harden-runner@tls-inspect
+            with:
+              egress-policy: audit     
+          - uses: actions/checkout@v4
+          - run: "echo '// changes' >> main.js"
+          - name: Create Pull Request
+            uses: peter-evans/create-pull-request@v5
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          - run: free -m 
+
+    comment-on-pr:
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            
+          - uses: h0x0er/harden-runner@tls-inspect #https-capture
+            with:
+             egress-policy: audit     
+          - uses: actions/checkout@v4
+
+          - name: Comment PR
+            uses: thollander/actions-comment-pull-request@v2
+            with:
+             message: |
+              Hello world ! :wave:
+             pr_number: 1
+        
+    dispatch-workflow:
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+    
+          - run: free -m 
+          - uses: h0x0er/harden-runner@tls-inspect
+            with:
+              egress-policy: audit   
+          - uses: actions/checkout@v4
+          - name: Invoke workflow without inputs
+            uses: benc-uk/workflow-dispatch@v1
+            with:
+              workflow: enumeration.yml
+          - run: free -m
