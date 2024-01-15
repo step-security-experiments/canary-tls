@@ -10,6 +10,7 @@ jobs:
     issue-create:
         permissions:
             contents: write
+            issues: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -30,6 +31,7 @@ jobs:
     create-pr:
         permissions:
           contents: write
+          pull-requests: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -50,6 +52,8 @@ jobs:
     comment-on-pr:
         permissions:
           contents: write
+          issues: write
+          pull-requests: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -69,6 +73,7 @@ jobs:
     dispatch-workflow:
         permissions:
           contents: write
+          actions: write
         if: always()
         runs-on: ubuntu-latest
         steps:
