@@ -1,0 +1,28 @@
+name: Dynamic Node
+
+on:
+  workflow_dispatch:
+
+# permissions:
+#   contents: read
+
+jobs:
+  dynamic-node:
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+         
+      - uses: h0x0er/harden-runner@tls-inspect
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@v3
+      - run: which node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "16"
+          
+      - run: which node
+      
+      - run: node req.js
+      # - run: |
