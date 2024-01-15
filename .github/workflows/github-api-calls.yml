@@ -8,6 +8,8 @@ on:
 
 jobs:
     issue-create:
+        permissions:
+            contents: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -26,6 +28,8 @@ jobs:
 
     
     create-pr:
+        permissions:
+          contents: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -44,6 +48,8 @@ jobs:
           - run: free -m 
 
     comment-on-pr:
+        permissions:
+          contents: write
         if: always()
         runs-on: ubuntu-latest
         steps:
@@ -61,6 +67,8 @@ jobs:
              pr_number: 1
         
     dispatch-workflow:
+        permissions:
+          contents: write
         if: always()
         runs-on: ubuntu-latest
         steps:
