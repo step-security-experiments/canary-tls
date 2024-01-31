@@ -58,7 +58,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             
-          - uses: h0x0er/harden-runner@tls-inspect #https-capture
+          - uses: step-security/harden-runner@rc
             with:
              egress-policy: audit     
           - uses: actions/checkout@v4
@@ -79,7 +79,7 @@ jobs:
         steps:
     
           - run: free -m 
-          - uses: h0x0er/harden-runner@tls-inspect
+          - uses: step-security/harden-runner@rc
             with:
               egress-policy: audit   
           - uses: actions/checkout@v4
