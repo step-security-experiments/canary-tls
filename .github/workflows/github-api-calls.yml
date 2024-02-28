@@ -19,12 +19,14 @@ jobs:
      
           - uses: step-security/harden-runner@rc
             with:
-              egress-policy: audit     
+              egress-policy: audit
+              
           - uses: actions/checkout@v3
           - uses: JasonEtco/create-an-issue@v2
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
+          - run: curl "localhost:9191/status"
           - run: free -m 
 
     
@@ -39,7 +41,8 @@ jobs:
           - run: free -m 
           - uses: step-security/harden-runner@rc
             with:
-              egress-policy: audit     
+              egress-policy: audit
+              
           - uses: actions/checkout@v4
           - run: "echo '// changes' >> main.js"
           - name: Create Pull Request
@@ -47,6 +50,7 @@ jobs:
             env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+          - run: curl "localhost:9191/status"
           - run: free -m 
 
     comment-on-pr:
@@ -61,6 +65,7 @@ jobs:
           - uses: step-security/harden-runner@rc
             with:
              egress-policy: audit     
+
           - uses: actions/checkout@v4
 
           - name: Comment PR
@@ -69,6 +74,7 @@ jobs:
              message: |
               Hello world ! :wave:
              pr_number: 1
+          - run: curl "localhost:9191/status"
         
     dispatch-workflow:
         permissions:
@@ -81,10 +87,12 @@ jobs:
           - run: free -m 
           - uses: step-security/harden-runner@rc
             with:
-              egress-policy: audit   
+              egress-policy: audit  
+
           - uses: actions/checkout@v4
           - name: Invoke workflow without inputs
             uses: benc-uk/workflow-dispatch@v1
             with:
               workflow: enumeration.yml
           - run: free -m
+          - run: curl "localhost:9191/status"
