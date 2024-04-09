@@ -15,7 +15,7 @@ jobs:
       packages: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@rc-7
+        uses: step-security/harden-runner@rc
         with:
             disable-sudo: false
             egress-policy: audit
