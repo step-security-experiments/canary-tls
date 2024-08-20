@@ -1,0 +1,57 @@
+name: Open Syscall Access
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: h0x0er/harden-runner@arm-support
+        with:
+          egress-policy: audit
+
+      - name: Checkout Actions Repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Readme files
+        run: |
+          echo "# Canary TLS tessts" >> README.md
+          mkdir notes
+          echo "# Canary TLS tesst " >> ./notes/README.md
+          
+          
+
+      - name: Writes changes in the local checkout
+        uses: crate-ci/typos@v1.23.3
+        continue-on-error: true
+        with:
+          files: ./*.md
+          write_changes: true
+
+      # - name: Update package list
+      #   run: sudo apt-get update
+    
+      # - name: Install strace
+      #   run: sudo apt-get install -y strace
+      
+      # - name: strace
+      #   continue-on-error: true
+      #   run: |
+      #     strace -o strace_output.txt ./typos /home/runner/work/agent-api/agent-api/README.md --write-changes
+                
+      # - name: print output
+      #   run: cat strace_output.txt
+      
+      - name: Check for uncommitted modified files
+        run: |
+          # Check for modified files that are not committed
+          UNCOMMITTED_MODIFIED_FILES=$(git status --porcelain | awk '{print $2}')
+          echo "Checking for uncommitted modified files..."
+          if [ -z "$UNCOMMITTED_MODIFIED_FILES" ]; then
+            echo "No uncommitted files have been modified."
+          else
+            echo "The following files have been modified but not committed:"
+            echo "$UNCOMMITTED_MODIFIED_FILES"
+          fi
