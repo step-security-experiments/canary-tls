@@ -27,7 +27,7 @@ jobs:
         uses: crate-ci/typos@v1.23.3
         continue-on-error: true
         with:
-          files: ./README.md.md,./notes/README.md 
+          files: ./README.md.md ./notes/README.md 
           write_changes: true
 
       # - name: Update package list
