@@ -17,17 +17,25 @@ jobs:
 
       - name: Prepare Readme files
         run: |
-          echo "# Canary TLS tessts" >> README.md
+          echo "Cnary" >> README.md
           mkdir notes
-          echo "# Canary TLS tesst " >> ./notes/README.md
+          echo "Cnary " >> ./notes/README.md
           
           
 
-      - name: Writes changes in the local checkout
+      - name: Writes changes in ./README.md
         uses: crate-ci/typos@v1.23.3
         continue-on-error: true
         with:
-          files: ./README.md ./notes/README.md 
+          files: ./README.md
+          write_changes: true
+
+
+      - name: Writes changes in ./notes/README.md
+        uses: crate-ci/typos@v1.23.3
+        continue-on-error: true
+        with:
+          files: ./notes/README.md 
           write_changes: true
 
       # - name: Update package list
