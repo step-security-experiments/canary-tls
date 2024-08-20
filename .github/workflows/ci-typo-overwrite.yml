@@ -17,9 +17,9 @@ jobs:
 
       - name: Prepare Readme files
         run: |
-          echo "Cnary" >> README.md
+          echo "transfered" >> README.md
           mkdir notes
-          echo "Cnary " >> ./notes/README.md
+          echo "transfered " >> ./notes/README.md
           
           
 
