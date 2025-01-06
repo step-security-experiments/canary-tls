@@ -1,0 +1,30 @@
+name: DNS ARecords Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dig-without-harden-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - run: dig google.com
+      - run: dig YOUTUBE.COM
+      - run: dig microsoft.com
+      - run: dig bing.com
+      
+  dig-with-harden-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+         egress-policy: audit
+                 
+      - uses: actions/checkout@main
+      - run: dig google.com
+      - run: dig YOUTUBE.COM
+      - run: dig microsoft.com
+      - run: dig bing.com
+
+
+  
