@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: h0x0er/harden-runner@arm-support
+        uses: step-security/harden-runner@rc
         with:
           egress-policy: audit
 
