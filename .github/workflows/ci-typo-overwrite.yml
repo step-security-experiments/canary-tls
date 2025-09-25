@@ -63,3 +63,5 @@ jobs:
             echo "The following files have been modified but not committed:"
             echo "$UNCOMMITTED_MODIFIED_FILES"
           fi
+
+      - run: sudo cat /home/agent/agent.json
