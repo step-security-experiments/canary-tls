@@ -1,0 +1,28 @@
+name: HTTPS test
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner-tag:
+        description: runner to execute on
+        required: true
+        default: ubuntu-latest
+jobs:
+
+  https-test:
+    runs-on: ${{ inputs.runner-tag }}
+    steps:
+
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+        with:
+          node-version: 18
+
+      - run: docker pull alpine:latest
+    
+      - name: do node call
+        run: |
+          node req.js
+      - run: sudo apt update
+      
+      - run: curl https://api.github.com/meta
