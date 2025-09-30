@@ -13,6 +13,10 @@ jobs:
     runs-on: ${{ inputs.runner-tag }}
     steps:
 
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@main
       - uses: actions/setup-node@main
         with:
