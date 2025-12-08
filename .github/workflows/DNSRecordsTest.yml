@@ -3,11 +3,19 @@ name: DNS ARecords Test
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   dig-without-harden-runner:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # main
       - run: dig google.com
       - run: dig YOUTUBE.COM
       - run: dig microsoft.com
@@ -16,11 +24,11 @@ jobs:
   dig-with-harden-runner:
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@rc
+      - uses: step-security/harden-runner@c51e8eeb6c4fdcd08f65e43a051dacdbfaa69702 # rc
         with:
          egress-policy: audit
                  
-      - uses: actions/checkout@main
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # main
       - run: dig google.com
       - run: dig YOUTUBE.COM
       - run: dig microsoft.com
