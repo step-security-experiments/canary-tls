@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: step-security/harden-runner@rc
         with:
-          egress-policy: audit
+          egress-policy: block
           disable-sudo: true
           allowed-endpoints: >
            api.github.com:443
@@ -34,9 +34,3 @@ jobs:
       - name: "do 208.67.222.222:80"
         if: always()  
         run: curl --connect-timeout 5 -Iv "http://208.67.222.222:80" 
-      - name: "do 142.250.80.46:80"
-        if: always()  
-        run: curl --connect-timeout 5 -Iv "http://142.250.80.46:80" 
-      - name: "do 93.184.216.34:80"
-        if: always()  
-        run: curl --connect-timeout 5 -Iv "http://93.184.216.34:80" 
