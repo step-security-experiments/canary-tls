@@ -34,6 +34,6 @@ jobs:
       - name: "do 208.67.222.222:80"
         if: always()  
         run: curl --connect-timeout 5 -Iv "http://208.67.222.222:80" 
-      - name: "do 8.8.8.8:443"
+      - name: "do 8.8.8.8:53"
         if: always()  
-        run: curl --connect-timeout 5 -Iv "http://8.8.8.8:443" 
+        run: curl --connect-timeout 5 -Iv "http://8.8.8.8:53" 
