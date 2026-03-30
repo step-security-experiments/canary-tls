@@ -25,9 +25,9 @@ jobs:
       - name: "do 1.1.1.1:80"
         if: always()  
         run: curl --connect-timeout 5 -Iv "http://1.1.1.1:80" 
-      - name: "do 1.1.1.1:443"
-        if: always()  
-        run: curl --connect-timeout 5 -Iv "http://1.1.1.1:443" 
+      # - name: "do 1.1.1.1:443"
+      #   if: always()  
+      #   run: curl --connect-timeout 5 -Iv "http://1.1.1.1:443" 
       - name: "do https://microsoft.com"
         if: always()  
         run: curl --connect-timeout 5 -Iv "https://microsoft.com" 
