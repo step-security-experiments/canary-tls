@@ -2,18 +2,21 @@ name: Open Syscall Access
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   run:
     name: Spell Check with Typos
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@rc
+        uses: step-security/harden-runner@c51e8eeb6c4fdcd08f65e43a051dacdbfaa69702 # rc
         with:
           egress-policy: audit
 
       - name: Checkout Actions Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
 
       - name: Prepare Readme files
         run: |
@@ -24,7 +27,7 @@ jobs:
           
 
       - name: Writes changes in ./README.md
-        uses: crate-ci/typos@v1.23.3
+        uses: crate-ci/typos@3ddcf00482aad5eb418a6cd1955ea2125d0785c1 # v1.23.3
         continue-on-error: true
         with:
           files: ./README.md
@@ -32,7 +35,7 @@ jobs:
 
 
       - name: Writes changes in ./notes/README.md
-        uses: crate-ci/typos@v1.23.3
+        uses: crate-ci/typos@3ddcf00482aad5eb418a6cd1955ea2125d0785c1 # v1.23.3
         continue-on-error: true
         with:
           files: ./notes/README.md 
