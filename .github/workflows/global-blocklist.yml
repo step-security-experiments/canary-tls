@@ -7,6 +7,9 @@ jobs:
     name: Global-Blocklist
     runs-on: ubuntu-latest
     steps:           
+     - uses: step-security/harden-runner@rc
+       with:
+        egress-policy: audit   
      - uses: actions/checkout@v3
      
      - name: curl dummyblock.com
