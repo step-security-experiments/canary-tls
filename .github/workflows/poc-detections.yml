@@ -16,7 +16,7 @@ on:
 
 jobs:
   pytorch-simulation:
-    if: ${{ github.event.inputs.run_only_anomalous != 'true' }}
+    # if: ${{ github.event.inputs.run_only_anomalous != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: step-security/harden-runner@v2
