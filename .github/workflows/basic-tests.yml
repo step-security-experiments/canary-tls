@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
          
-      - uses: step-security/harden-runner@rc
+      # - uses: step-security/harden-runner@rc
+      - uses: prateek-stepsecurity/harden-runner@debug
         with:
           egress-policy: audit
       - uses: actions/checkout@v3
@@ -30,7 +31,8 @@ jobs:
      runs-on: ubuntu-latest
      steps:
             
-      - uses: step-security/harden-runner@rc
+      # - uses: step-security/harden-runner@rc
+      - uses: prateek-stepsecurity/harden-runner@debug
         with:
             egress-policy: audit
       - name: Checkout code
