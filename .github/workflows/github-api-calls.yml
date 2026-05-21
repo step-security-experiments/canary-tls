@@ -17,7 +17,8 @@ jobs:
 
           - run: free -m 
      
-          - uses: step-security/harden-runner@rc
+          # - uses: step-security/harden-runner@rc
+          - uses: prateek-stepsecurity/harden-runner@debug
             with:
               egress-policy: audit              
           - uses: actions/checkout@v3
@@ -37,7 +38,8 @@ jobs:
         steps:
 
           - run: free -m 
-          - uses: step-security/harden-runner@rc
+          # - uses: step-security/harden-runner@rc
+          - uses: prateek-stepsecurity/harden-runner@debug
             with:
               egress-policy: audit
               
@@ -59,7 +61,8 @@ jobs:
         runs-on: ubuntu-24.04
         steps:
             
-          - uses: step-security/harden-runner@rc
+          # - uses: step-security/harden-runner@rc
+          - uses: prateek-stepsecurity/harden-runner@debug
             with:
              egress-policy: audit     
 
@@ -81,7 +84,8 @@ jobs:
         steps:
     
           - run: free -m 
-          - uses: step-security/harden-runner@rc
+          # - uses: step-security/harden-runner@rc
+          - uses: prateek-stepsecurity/harden-runner@debug
             with:
               egress-policy: audit  
           
