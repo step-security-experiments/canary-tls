@@ -1,0 +1,98 @@
+name: Cache Discovery Tests
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  # Scenario A (#675): force a cold cache scope by deleting the seeded entry.
+  # No harden-runner in this job, its pre-step would re-seed the entry.
+  reset-cache-entry:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Delete harden-runner cache entries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh cache delete harden-runner-cacheKey --repo ${{ github.repository }} || echo "no entry to delete"
+
+  # Cold run. PASS: pre-step logs "Adding cacheHost: ...:443" (seed + re-lookup
+  # worked) and never logs "Switching egress-policy to audit mode" (that string
+  # no longer exists). The cache step proves cache traffic flows under block.
+  cold-cache-block:
+    needs: reset-cache-entry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: cache-probe
+          key: cold-probe-${{ github.run_id }}-${{ github.run_attempt }}
+      - run: mkdir -p cache-probe && date > cache-probe/stamp.txt
+
+  # Scenario B (#681): steady state, entry was seeded by the job above.
+  # PASS: pre-step logs "Adding cacheHost" with NO
+  # "Failed to save: Unable to reserve cache" line anywhere.
+  steady-cache-block:
+    needs: cold-cache-block
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: cache-probe
+          key: steady-probe-${{ github.run_id }}-${{ github.run_attempt }}
+      - run: mkdir -p cache-probe && date > cache-probe/stamp.txt
+
+  # Scenario C: deny-list mode skips discovery entirely.
+  # PASS: pre-step has NO "cache version:" and NO "Adding cacheHost" lines.
+  deny-list-block:
+    needs: reset-cache-entry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: block
+          denied-endpoints: >
+            evil.example.com:443
+      - run: curl -sS -o /dev/null https://github.com && echo "non-denied endpoint reachable"
+
+  # Scenario D: both inputs set = allow-list mode (allowed wins).
+  # PASS: pre-step logs the "Both allowed-endpoints and denied-endpoints are
+  # set..." info line AND "Adding cacheHost" (discovery no longer skipped),
+  # and the cache step works.
+  both-inputs-set:
+    needs: steady-cache-block
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+          denied-endpoints: >
+            evil.example.com:443
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: cache-probe
+          key: both-probe-${{ github.run_id }}-${{ github.run_attempt }}
+      - run: mkdir -p cache-probe && date > cache-probe/stamp.txt
