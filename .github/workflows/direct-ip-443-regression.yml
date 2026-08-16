@@ -1,0 +1,28 @@
+name: Direct IP 443 Regression Check
+
+# Confirms the DEFAULT (opt-in OFF) behavior is unchanged: a bare direct IP on
+# port 443 with no resolved domain should stay hidden (attributed to the step -1
+# "Post Complete job" bucket, excluded from the baseline) and produce NO
+# New-Outbound-Network-Call detection. Uses RFC 5737 TEST-NET addresses (not
+# routed) so no real traffic leaves; the TCP SYN is still captured as a direct IP.
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  direct-ip-443:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: direct IP on 443 (no DNS)
+        if: always()
+        run: |
+          curl -v --max-time 8 https://203.0.113.30:443/ -o /dev/null || true
+          curl -v --max-time 8 https://198.51.100.30:443/ -o /dev/null || true
