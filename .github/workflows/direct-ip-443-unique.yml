@@ -1,0 +1,30 @@
+name: Direct IP 443 Unique Per Run
+
+# Drives a NEW bare direct IP on port 443 each run (RFC 5737 TEST-NET-3, not
+# routed; the TCP SYN is still captured by harden-runner). With the customer opted
+# in via EnableDirectIP443Detection, once this workflow-job's baseline clears the
+# run-count threshold each fresh IP should surface at its step AND fire a
+# New-Outbound-Network-Call detection.
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  direct-ip-443-unique:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+
+      - name: new direct IP on 443 per run (no DNS)
+        if: always()
+        run: |
+          OCTET=$(( (GITHUB_RUN_NUMBER % 250) + 2 ))
+          IP="203.0.113.$OCTET"
+          echo "Testing new direct IP: $IP"
+          curl -v --max-time 8 "https://$IP:443/" -o /dev/null || true
