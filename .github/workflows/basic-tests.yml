@@ -9,7 +9,7 @@ on:
 jobs:
   dynamic-node:
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
          
       - uses: step-security/harden-runner@rc
@@ -27,7 +27,7 @@ jobs:
       
   owner-mismatch:
      if: always()
-     runs-on: ubuntu-latest
+     runs-on: ubuntu-26.04
      steps:
             
       - uses: step-security/harden-runner@rc

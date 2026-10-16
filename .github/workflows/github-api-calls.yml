@@ -12,7 +12,7 @@ jobs:
             contents: write
             issues: write
         if: always()
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
 
           - run: free -m 
@@ -33,7 +33,7 @@ jobs:
           contents: write
           pull-requests: write
         if: always()
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
 
           - run: free -m 
@@ -77,7 +77,7 @@ jobs:
           contents: write
           actions: write
         if: always()
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
     
           - run: free -m 
