@@ -7,7 +7,7 @@ jobs:
   egress-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: step-security/harden-runner@rc
+      - uses: h0x0er/harden-runner@gh-dns-test
         with:
           egress-policy: block
           disable-sudo: true
@@ -21,9 +21,9 @@ jobs:
       - name: Run curl https://microsoft.com
         if: always()
         run: curl https://microsoft.com
-      - name: sleep
-        if: always()
-        run: sleep 10
+      # - name: sleep
+      #   if: always()
+      #   run: sleep 10
       - name: Run curl https://www.goreleaser.com
         if: always()
         run: curl https://www.goreleaser.com
