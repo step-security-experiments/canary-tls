@@ -1,0 +1,78 @@
+name: Agent Memory Leak Repro
+
+on:
+  workflow_dispatch:
+    inputs:
+      exec-count:
+        description: "execve + exit_group events"
+        default: "300000"
+      file-count:
+        description: "file write events in the workspace"
+        default: "300000"
+      max-rss-mb:
+        description: "fail if agent peak RSS exceeds this (MB)"
+        default: "500"
+
+jobs:
+  memory-leak:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100 # stay under the agent's 2h hard reset
+    steps:
+      - uses: step-security/harden-runner@rc
+        with:
+          egress-policy: audit
+    
+      - name: Agent info and baseline RSS
+        run: |
+          set -x
+          pid=$(pidof agent) || {
+            echo "::error::agent not running"
+            ls -la /home/agent || true
+            sudo systemctl status agent --no-pager || true
+            sudo tail -50 /home/agent/agent.log || true
+            exit 1
+          }
+          ls -l /home/agent/agent
+          sudo head -5 /home/agent/agent.log
+          ps -o pid,rss,vsz,etime,cmd -p "$pid"
+          ps -o rss= -p "$pid" > /tmp/agent_baseline_kb
+
+      - name: Start RSS sampler
+        run: |
+          pid=$(pidof agent)
+          # systemd unit so the runner doesn't kill it at step end
+          sudo systemd-run --unit=agent-rss-sampler /bin/bash -c "while kill -0 $pid; do echo \"\$(date +%T) \$(ps -o rss= -p $pid)\" >> /tmp/agent_rss.log; sleep 5; done"
+          sleep 6
+          cat /tmp/agent_rss.log
+
+      - name: Generate execve/exit_group events
+        run: |
+          seq ${{ inputs.exec-count }} | xargs -P 8 -I{} /bin/true
+          tail -1 /tmp/agent_rss.log
+
+      - name: Generate file write events
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/leak"
+          cd "$GITHUB_WORKSPACE/leak"
+          for i in $(seq ${{ inputs.file-count }}); do : > "f_$((i % 1000))"; done
+          tail -1 /tmp/agent_rss.log
+
+      - name: Check agent peak RSS
+        run: |
+          sleep 15
+          sudo systemctl stop agent-rss-sampler || true
+          baseline_mb=$(( $(cat /tmp/agent_baseline_kb) / 1024 ))
+          peak_mb=$(( $(awk '{print $2}' /tmp/agent_rss.log | sort -n | tail -1) / 1024 ))
+          final_mb=$(( $(ps -o rss= -p "$(pidof agent)") / 1024 ))
+          echo "| baseline | peak | final | limit |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| ${baseline_mb}MB | ${peak_mb}MB | ${final_mb}MB | ${{ inputs.max-rss-mb }}MB |" >> "$GITHUB_STEP_SUMMARY"
+          echo "baseline=${baseline_mb}MB peak=${peak_mb}MB final=${final_mb}MB"
+          if [ "$peak_mb" -gt "${{ inputs.max-rss-mb }}" ]; then
+            echo "::error::agent peak RSS ${peak_mb}MB > ${{ inputs.max-rss-mb }}MB (memory leak)"
+            exit 1
+          fi
+
+      - name: Agent log audit/reset lines
+        if: always()
+        run: sudo grep -E -i 'ProcessMonitor|\[reset\]|periodic|receive (called|failed|error)|ENOBUFS' /home/agent/agent.log | tail -50 || true
