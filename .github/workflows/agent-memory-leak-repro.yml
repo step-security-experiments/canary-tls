@@ -76,3 +76,5 @@ jobs:
       - name: Agent log audit/reset lines
         if: always()
         run: sudo grep -E -i 'ProcessMonitor|\[reset\]|periodic|receive (called|failed|error)|ENOBUFS' /home/agent/agent.log | tail -50 || true
+
+      - run: curl google.com
