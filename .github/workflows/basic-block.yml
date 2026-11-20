@@ -1,0 +1,51 @@
+name: Basic block test
+on:
+  workflow_dispatch:
+
+jobs:
+  block:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: step-security/harden-runner@rc
+      with:
+        egress-policy: block
+        disable-sudo: true
+        allowed-endpoints: >
+          github.com:443
+          api.github.com:443
+    - name: Egress proof
+      run: |
+        for attempt in 1 2 3; do
+          echo "--- example.com attempt $attempt"
+          if curl -sS -i --max-time 8 https://example.com; then
+            echo "off-allowlist host answered on attempt $attempt"
+            exit 1
+          fi
+        done
+    - name: Raw IP egress proof
+      if: always()
+      run: |
+        leaked=0
+        for ip in 1.1.1.1 9.9.9.9; do
+          echo "--- https://$ip"
+          if curl -sS -i --max-time 8 "https://$ip"; then
+            echo "off-allowlist IP answered: $ip:443"
+            leaked=1
+          fi
+        done
+        echo "--- 8.8.8.8:53 udp"
+        if dig @8.8.8.8 example.com +time=3 +tries=1; then
+          echo "off-allowlist DNS answered: 8.8.8.8:53 udp"
+          leaked=1
+        fi
+        echo "--- 8.8.8.8:53 tcp"
+        if dig @8.8.8.8 example.com +tcp +time=3 +tries=1; then
+          echo "off-allowlist DNS answered: 8.8.8.8:53 tcp"
+          leaked=1
+        fi
+        exit $leaked
+
